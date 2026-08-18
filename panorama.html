@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Музей — виртуальный тур</title>
+    <script src="pannellum.js"></script>
+    <link rel="stylesheet" href="pannellum.css"/>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        #panorama { width: 100vw; height: 100vh; }
+        
+        /* Минималистичный пульт управления */
+        #nav-panel {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 40, 25, 0.85);
+            padding: 15px 25px;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        #current-scene { 
+            color: #ffffff; 
+            font-size: 15px; 
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+            opacity: 0.95;
+        }
+
+        .nav-row { display: flex; gap: 12px; align-items: center; justify-content: center; }
+
+        /* Стильные современные кнопки с поддержкой двух строк текста */
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            opacity: 0;
+            transform: scale(0.85);
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+        }
+
+        /* Текст самого действия (крупный) */
+        .btn-title {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Текст-подсказка ориентира (мелкий и блеклый) */
+        .btn-hint {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Класс активного состояния */
+        .nav-btn.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            position: relative;
+            visibility: visible;
+        }
+
+        .nav-btn:hover { 
+            background: #2e7d32; 
+            color: #ffffff; 
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn:hover .btn-hint {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .pnm-hotspot.pnm-info {
+            width: 44px !important;
+            height: 44px !important;
+            background-color: #2e7d32 !important;
+            border: 3px solid #ffffff !important;
+            border-radius: 50% !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+            background-size: 55% !important; 
+        }
+        .pnm-hotspot.pnm-info:hover {
+            background-color: #1b5e20 !important; 
+            transform: scale(1.1);
+        }
+
+        #modal-overlay-close {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1004;
+            display: none; /* Включается только когда открыто окно */
+        }
+
+        #museum-side-panel {
+            position: absolute;
+            top: 40px;
+            right: 40px; 
+            width: 320px;
+            background: rgba(14, 35, 18, 0.95); /* Глубокий тёмно-зелёный цвет */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 22px;
+            color: #ffffff; /* Белые буквы */
+            z-index: 1005;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(30px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #museum-side-panel.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .panel-img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.2px; }
+        .panel-desc { font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, 0.9); }
+    </style>
+</head>
+<body>
+
+    <div id="panorama"></div>
+
+    <!-- Пульт управления с новой логикой "Выход в центре" -->
+    <div id="nav-panel">
+        <div id="current-scene">Загрузка...</div>
+        <div class="nav-row">
+            
+            <button id="btn-4" class="nav-btn" onclick="goTo('scene4')">
+                <span class="btn-title">▼ К Входу</span>
+                <span class="btn-hint">В начало зала</span>
+            </button>
+
+            <button id="btn-5" class="nav-btn" onclick="goTo('scene5')">
+                <span class="btn-title">▲ За левую арку</span>
+                <span class="btn-hint">Осмотреть левое крыло</span>
+            </button>
+
+            <button id="btn-18" class="nav-btn" onclick="goTo('scene18')">
+                <span class="btn-title">◀ В Центр (к Выходу)</span>
+                <span class="btn-hint">Главная зона и выход</span>
+            </button>
+
+            <button id="btn-7" class="nav-btn" onclick="goTo('scene7')">
+                <span class="btn-title">За правую арку ▶</span>
+                <span class="btn-hint">Осмотреть правое крыло</span>
+            </button>
+
+            <button id="btn-6" class="nav-btn" onclick="goTo('scene6')">
+                <span class="btn-title">В Правое крыло ▼</span>
+                <span class="btn-hint">Финальная экспозиция</span>
+            </button>
+            
+        </div>
+    </div>
+
+    <div id="modal-overlay-close" onclick="closeSidePanel()"></div>
+    
+    <div id="museum-side-panel">
+        <img id="panel-picture" class="panel-img" src="" alt="Экспонат">
+        <div id="panel-caption" class="panel-title">Название</div>
+        <div id="panel-description" class="panel-desc">Описание</div>
+    </div>
+
+    <script>
+        var viewer = pannellum.viewer('panorama', {
+            "default": {
+                "firstScene": "scene4",
+                "sceneFadeDuration": 800,
+                "autoLoad": true,
+                "showControls": true,
+                "hotSpotDebug": true // <-- ВОТ ЭТА СТРОЧКА ДОБАВЛЕНА ДЛЯ РЕЖИМА РАЗРАБОТЧИКА!
+            },
+            "scenes": {
+                "scene4":  { "panorama": "perfect_panorama4.jpg",
+                    "hotSpots": [
+                        {
+                            "pitch": 18.7, 
+                            "yaw": -160.4, 
+                            "type": "info", 
+                            "createTooltipFunc": hideDefaultTooltip,
+                            "clickHandlerFunc": function() { 
+                                showSidePanel(
+                                    "Птица", 
+                                    "Коричневая птица, обитающая в лесных массивах.",
+                                    "images/kanuk.png" // Замените на вашу картинку птицы
+                                ); 
+                            }
+                        }
+                    ]
+                 },
+                "scene5":  { "panorama": "perfect_panorama5.jpg",
+                    "hotSpots": [
+                        {
+                            "pitch": 6.2, 
+                            "yaw": 114.3, 
+                            "type": "info", 
+                            "text": "<b>Индюк</b><br>это крупная домашняя птица, самец индейки, известный своим большим весом, красивым хвостом и гордым видом."
+                        }, 
+                        {
+                            "pitch": -26.3, 
+                            "yaw": 145.3, 
+                            "type": "info", 
+                            "text": "<b>Лиса</b><br>полифилетическая группа млекопитающих из семейства псовых отряда хищных"
+                        },
+                        {
+                            "pitch": -10.7, 
+                            "yaw": 168.7, 
+                            "type": "info", 
+                            "text": "<b>Бобер</b><br>бобер"
+                        },
+                        {
+                            "pitch": -27.0, 
+                            "yaw": 173.3, 
+                            "type": "info", 
+                            "text": "<b>Заяц</b><br>Лесной заяц"
+                        },
+                        {
+                            "pitch": -27.1, 
+                            "yaw": -94.3, 
+                            "type": "info", 
+                            "text": "<b>Скунс</b><br>животное"
+                        },
+                        {
+                            "pitch": -3.1, 
+                            "yaw": -160.4, 
+                            "type": "info", 
+                            "text": "<b>Сова</b><br>Ночная птица"
+                        }
+                    ]
+                 },
+                "scene7":  { "panorama": "perfect_panorama7.jpg" },
+                "scene6":  { "panorama": "perfect_panorama6.jpg" },
+                "scene18": { 
+                    "panorama": "perfect_panorama18.jpg",
+                    "hotSpots": [
+                        // Сюда вы будете вставлять ваши экспонаты по очереди через запятую:
+                        {
+                            "pitch": -5.0,    // Сюда впишете Pitch из консоли после клика
+                            "yaw": 20.0,      // Сюда впишете Yaw из консоли после клика
+                            "type": "info",
+                            "text": "Описание экспоната №1"
+                        }
+                    ]
+                }
+            }
+        });
+
+        // Карта названий залов под новую планировку
+        const КАРТА_МУЗЕЯ = {
+            'scene4':  { name: '🏛️ Вы находитесь: Вход в зал',           allowed: ['scene5', 'scene18'] },
+            'scene5':  { name: '🖼️ Вы находитесь: Галерея за левой аркой', allowed: ['scene4', 'scene7'] },
+            'scene7':  { name: '✨ Вы находитесь: Галерея за правой аркой',allowed: ['scene5', 'scene6'] },
+            'scene6':  { name: '🏺 Вы находитесь: Правое крыло зала',      allowed: ['scene7', 'scene18'] },
+            'scene18': { name: '💎 Вы находитесь: Центр зала (Выход)',     allowed: ['scene4', 'scene6'] }
+        };
+
+        function goTo(sceneId) {
+            viewer.loadScene(sceneId);
+            updatePanel(sceneId);
+        }
+
+        function updatePanel(currentId) {
+            const config = КАРТА_МУЗЕЯ[currentId];
+            document.getElementById('current-scene').innerText = config.name;
+            
+            const buttons = {
+                'scene4': 'btn-4',
+                'scene5': 'btn-5',
+                'scene7': 'btn-7',
+                'scene6': 'btn-6',
+                'scene18': 'btn-18'
+            };
+
+            for (let id in buttons) {
+                let btnElement = document.getElementById(buttons[id]);
+                if (config.allowed.includes(id)) {
+                    btnElement.classList.add('active');
+                } else {
+                    btnElement.classList.remove('active');
+                }
+            }
+        }
+
+        setTimeout(function() { updatePanel('scene4'); }, 500);
+    </script>
+</body>
+</html>
+
+/кружочки больше + ярче - модель экрана линукс 
