@@ -97,18 +97,29 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* === КРУПНЫЕ ЯРКО-ЗЕЛЕНЫЕ КНОПКИ ДЛЯ ХОТСПОРТОВ === */
         .pnm-hotspot.pnm-info {
             width: 44px !important;
             height: 44px !important;
-            background-color: #2e7d32 !important;
-            border: 3px solid #ffffff !important;
+            background-color: #2e7d32 !important; /* Насыщенный зелёный фон */
+            border: 3px solid #ffffff !important; /* Белая окантовка */
             border-radius: 50% !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
-            background-size: 55% !important; 
+            background-size: 60% !important; 
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            
+            /* ПРИНУДИТЕЛЬНО СТИРАЕМ СТАРУЮ ЧЕРНУЮ МАСКУ ПЛЕЕРА */
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+            
+            /* ВШИВАЕМ ЧИСТУЮ БЕЛУЮ ИКОНКУ "i" */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://w3.org" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>') !important; 
         }
+        
         .pnm-hotspot.pnm-info:hover {
             background-color: #1b5e20 !important; 
-            transform: scale(1.1);
+            transform: scale(1.1) !important;
         }
 
         #modal-overlay-close {
@@ -302,7 +313,7 @@
                                     "Тяготеет к открытому ландшавту. На лесных территориях чаще встречается по опушкам, " +
                                     "вырубкам и гарям. Летом питается в основном травянистыми растениями, зимой переходит на веточный корм и " +
                                     "кору деревьев. Активен преимущественно " +
-                                    "в темное время суток. В южных част]ях своего ареала " +
+                                    "в темное время суток. В южных частях своего ареала " +
                                     "может приносить до 3-4 пометов за год.",
                                     "images/kanuk.jpg" // Замените на вашу картинку птицы
                                 ); 
@@ -388,6 +399,33 @@
             viewer.loadScene(sceneId);
             updatePanel(sceneId);
         }
+
+                // === ВОТ ЭТИХ ТРЕХ ФУНКЦИЙ СЕЙЧАС НЕТ В ВАШЕМ ФАЙЛЕ НА ГИТХАБЕ ===
+        function showSidePanel(title, description, imageUrl) {
+            document.getElementById('panel-caption').innerText = title;
+            document.getElementById('panel-description').innerHTML = description;
+            document.getElementById('panel-picture').src = imageUrl;
+            
+            document.getElementById('museum-side-panel').classList.add('open');
+            document.getElementById('modal-overlay-close').style.display = 'block';
+        }
+
+        function closeSidePanel() {
+            document.getElementById('museum-side-panel').classList.remove('open');
+            document.getElementById('modal-overlay-close').style.display = 'none';
+        }
+
+        function hideDefaultTooltip(hotSpotDiv) {
+            // Заглушка, чтобы стандартные черные подсказки плеера не мешали
+        }
+
+        // === А ТУТ НАЧИНАЕТСЯ ВАША СТАРУЮ ФУНКЦИЯ ПЕРЕХОДА ===
+        function goTo(sceneId) {
+            viewer.loadScene(sceneId);
+            updatePanel(sceneId);
+            closeSidePanel(); // Добавим строчку, чтобы панель сама закрывалась при переходе в другой зал
+        }
+
 
         function updatePanel(currentId) {
             const config = КАРТА_МУЗЕЯ[currentId];
