@@ -228,7 +228,8 @@
                         {
                             "pitch": 18.7, 
                             "yaw": -160.4, 
-                            "type": "info", 
+                            "type": "info",
+                            "cssClass": "custom-museum-hotspot", 
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -250,23 +251,27 @@
                         {
                             "pitch": 6.2, 
                             "yaw": 114.3, 
-                            "type": "custom", // Меняем на custom
-                            "createTooltipFunc": createMuseumHotspot, // Ставим вашу функцию
-                            "createTooltipArgs": { // Открываем аргументы
-                            "title": "Глухарь Tetrao urogallus", 
-                            "desc": "<b>Отряд:</b> Курообразные, сем. Тетеревиные.<br><br>" +
-                            "Обитатель глухих, чаще всего сосновых лесов, окраин верховых болот. Летом питается" +
-                            " травянистыми растениями и ягодами, зимой" +
-                            " - преимущественно хвоей.<br><br>" +
-                            "<i>Интересный факт:</i> Глухари регулярно заглатывают мелкие камешки, которые " +
-                             "выполняют роль жерновов для перетирания грубой пищи.",
-                            "img": "images/capercaillie.jpg"
-                            } // Закрываем аргументы
-                        }, // Закрываем сам хотспот глухаря, 
+                            "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
+                            "createTooltipFunc": hideDefaultTooltip,
+                            "clickHandlerFunc": function() { 
+                                showSidePanel(
+                                    "Глухарь Tetrao urogallus", 
+                                    "<b>Отряд:</b> Курообразные, сем. Тетеревиные.<br><br>" +
+                                    "Обитатель глухих, чаще всего сосновых лесов, окраин верховых болот. Летом питается" +
+                                    " травянистыми растениями и ягодами, зимой" +
+                                    " - преимущественно хвоей.<br><br>" +
+                                    "<i>Интересный факт:</i> Глухари регулярно заглатывают мелкие камешки, которые " +
+                                    "выполняют роль жерновов для перетирания грубой пищи.",
+                                    "images/capercaillie.jpg" // Замените на вашу картинку птицы
+                                ); 
+                            }
+                        }, 
                         {
                             "pitch": -26.3, 
                             "yaw": 145.3, 
                             "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -285,6 +290,7 @@
                             "pitch": -10.7, 
                             "yaw": 168.7, 
                             "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -303,6 +309,7 @@
                             "pitch": -27.0, 
                             "yaw": 173.3, 
                             "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -321,6 +328,7 @@
                             "pitch": -27.1, 
                             "yaw": -94.3, 
                             "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -339,6 +347,7 @@
                             "pitch": -3.1, 
                             "yaw": -160.4, 
                             "type": "info", 
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -365,6 +374,7 @@
                             "pitch": -5.0,    // Сюда впишете Pitch из консоли после клика
                             "yaw": 20.0,      // Сюда впишете Yaw из консоли после клика
                             "type": "info",
+                            "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
@@ -416,8 +426,10 @@
         }
 
         function hideDefaultTooltip(hotSpotDiv) {
-            // Заглушка, чтобы стандартные черные подсказки плеера не мешали
+            // Насильно добавляем нашему кружку класс больших зеленых кнопок
+            hotSpotDiv.classList.add('custom-museum-hotspot');
         }
+
 
         // === А ТУТ НАЧИНАЕТСЯ ВАША СТАРУЮ ФУНКЦИЯ ПЕРЕХОДА ===
         function goTo(sceneId) {
