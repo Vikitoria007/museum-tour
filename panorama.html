@@ -386,6 +386,13 @@
             }
         });
 
+        function createMuseumHotspot(hotSpotDiv, args) {
+            hotSpotDiv.classList.add('custom-museum-hotspot');
+            hotSpotDiv.addEventListener('click', function() {
+                showSidePanel(args.title, args.desc, args.img);
+            });
+        }
+
         // Карта названий залов под новую планировку
         const КАРТА_МУЗЕЯ = {
             'scene4':  { name: '🏛️ Вы находитесь: Вход в зал',           allowed: ['scene5', 'scene18'] },
@@ -394,11 +401,6 @@
             'scene6':  { name: '🏺 Вы находитесь: Правое крыло зала',      allowed: ['scene7', 'scene18'] },
             'scene18': { name: '💎 Вы находитесь: Центр зала (Выход)',     allowed: ['scene4', 'scene6'] }
         };
-
-        function goTo(sceneId) {
-            viewer.loadScene(sceneId);
-            updatePanel(sceneId);
-        }
 
                 // === ВОТ ЭТИХ ТРЕХ ФУНКЦИЙ СЕЙЧАС НЕТ В ВАШЕМ ФАЙЛЕ НА ГИТХАБЕ ===
         function showSidePanel(title, description, imageUrl) {
