@@ -1,0 +1,19 @@
+                    {
+                            "pitch": -5.0,    // Сюда впишете Pitch из консоли после клика
+                            "yaw": 20.0,      // Сюда впишете Yaw из консоли после клика
+                            "type": "info",
+                            "cssClass": "custom-museum-hotspot",
+                            "createTooltipFunc": hideDefaultTooltip,
+                            "clickHandlerFunc": function() { 
+                                showSidePanel(
+                                    "Ондатра Ondatra zibethricus", 
+                                    "<b>Отряд:</b> Грызуны, сем. Полевковые.<br><br>" +
+                                    "" +
+                                    "" +
+                                    "<br><br>" +
+                                    "след абзац" +
+                                    "",
+                                    "images/kanuk.jpg" // Замените на вашу картинку птицы
+                                ); 
+                            }
+                        }
