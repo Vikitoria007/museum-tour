@@ -8,91 +8,14 @@
     <style>
         body { margin: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         #panorama { width: 100vw; height: 100vh; }
-        
-        #nav-panel {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(20, 40, 25, 0.85);
-            padding: 15px 25px;
-            border-radius: 28px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            transition: all 0.3s ease;
+
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
-        #current-scene { 
-            color: #ffffff; 
-            font-size: 15px; 
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            margin-bottom: 2px;
-            opacity: 0.95;
-        }
-
-        .nav-row { display: flex; gap: 12px; align-items: center; justify-content: center; }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px;
-            border-radius: 18px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            opacity: 0;
-            transform: scale(0.85);
-            pointer-events: none;
-            position: absolute;
-            visibility: hidden;
-        }
-
-        .btn-title {
-            font-size: 13px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-hint {
-            font-size: 11px;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .nav-btn.active {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-            position: relative;
-            visibility: visible;
-        }
-
-        .nav-btn:hover { 
-            background: #2e7d32; 
-            color: #ffffff; 
-            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .nav-btn:hover .btn-hint {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        
         .custom-museum-hotspot {
             width: 26px !important;
             height: 26px !important;
@@ -101,7 +24,6 @@
             box-shadow: none !important;
         }
 
-        /* === заменить на названия экспонатов === */
         .custom-museum-hotspot::before {
             content: "i" !important;   
             position: absolute;
@@ -122,6 +44,67 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
             transition: all 0.2s ease-in-out !important;
         }
+        
+
+        .nav-arrow {
+            width: 70px !important;
+            height: 70px !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .nav-arrow::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 64px;
+            height: 64px;
+            margin: -32px 0 0 -32px;
+            background: rgba(46, 125, 50, 0.85);
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+            transition: all 0.2s ease;
+            animation: navPulse 2s infinite;
+        }
+
+
+        .nav-arrow::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 26px;
+            height: 26px;
+            background: #ffffff; 
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+
+            clip-path: polygon(
+                50% 0%,       
+                100% 100%,    
+                50% 75%,      
+                0% 100%      
+            );
+        }
+
+        .nav-arrow.arrow-up::after    { transform: translate(-50%, -50%) rotate(0deg); }
+        .nav-arrow.arrow-down::after  { transform: translate(-50%, -50%) rotate(180deg); }
+        .nav-arrow.arrow-left::after  { transform: translate(-50%, -50%) rotate(-90deg); }
+        .nav-arrow.arrow-right::after { transform: translate(-50%, -50%) rotate(90deg); }
+
+        .nav-arrow:hover::before {
+            background: #1b5e20;
+            transform: scale(1.15);
+        }
+
+        @keyframes navPulse {
+            0%, 100% { box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 0 0 rgba(46,125,50,0.7); }
+            50%      { box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 0 18px rgba(46,125,50,0); }
+        }
+        
 
         .custom-museum-hotspot:hover::before {
             background-color: #1b5e20 !important; 
@@ -203,38 +186,6 @@
 
     <div id="panorama"></div>
 
-    <div id="nav-panel">
-        <div id="current-scene">Загрузка...</div>
-        <div class="nav-row">
-            
-            <button id="btn-4" class="nav-btn" onclick="goTo('scene4')">
-                <span class="btn-title">▼ К Входу</span>
-                <span class="btn-hint">В начало зала</span>
-            </button>
-
-            <button id="btn-5" class="nav-btn" onclick="goTo('scene5')">
-                <span class="btn-title">▲ За левую арку</span>
-                <span class="btn-hint">Осмотреть левое крыло</span>
-            </button>
-
-            <button id="btn-18" class="nav-btn" onclick="goTo('scene18')">
-                <span class="btn-title">◀ В Центр (к Выходу)</span>
-                <span class="btn-hint">Главная зона и выход</span>
-            </button>
-
-            <button id="btn-7" class="nav-btn" onclick="goTo('scene7')">
-                <span class="btn-title">За правую арку ▶</span>
-                <span class="btn-hint">Осмотреть правое крыло</span>
-            </button>
-
-            <button id="btn-6" class="nav-btn" onclick="goTo('scene6')">
-                <span class="btn-title">В Правое крыло ▼</span>
-                <span class="btn-hint">Финальная экспозиция</span>
-            </button>
-            
-        </div>
-    </div>
-
     <div id="modal-overlay-close" onclick="closeSidePanel()"></div>
     
     <div id="museum-side-panel">
@@ -247,17 +198,22 @@
         var viewer = pannellum.viewer('panorama', {
             "default": {
                 "firstScene": "scene4",
-                "sceneFadeDuration": 800,
+                "sceneFadeDuration": 250,
                 "autoLoad": true,
                 "showControls": true,
-                "hotSpotDebug": true //режим разработчика 
+                "showFullscreenCtrl": false,
+                "showZoomCtrl": true,
+                "mouseZoom": true,
+                "draggable": true,          
+                "touchPanSpeed": 1.0,
+                "hotSpotDebug": false //режим разработчика 
             },
             "scenes": {
                 "scene4":  { "panorama": "perfect_panorama4.jpg",
                     "hotSpots": [
                         {
-                            "pitch": 18.7, 
-                            "yaw": -160.4, 
+                            "pitch": 13.5, 
+                            "yaw": -157.8, 
                             "type": "info",
                             "cssClass": "custom-museum-hotspot", 
                             "createTooltipFunc": hideDefaultTooltip,
@@ -275,8 +231,8 @@
                             }
                         },
                         {
-                            "pitch": -9.2,    
-                            "yaw": 87.2,     
+                            "pitch": -12.3,    
+                            "yaw": 84.9,     
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -294,8 +250,8 @@
                             }
                         },
                         {
-                            "pitch": -14.6,   
-                            "yaw": 90.5,      
+                            "pitch": -16.0,   
+                            "yaw": 94.0,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -304,7 +260,7 @@
                                     "Еж обыкновенный или европейский. " +
                                     "Erinaceus europaeus",
                                     "<b>Отряд:</b> Насекомоядные, сем. Ежовые.<br><br>" +
-                                    "Обитает в различных ландшафтах, отдавая предпочтение лиственным и смешшанным " +
+                                    "Обитает в различных ландшафтах, отдавая предпочтение лиственным и смешанным " +
                                     "лесам с подлеском. Ведет сумеречный и ночной образ жизни. " +
                                     "Зиму проводит в спячке. В пище преобладают насекомые.<br><br>" +
                                     "Мало восприимчив к ядам. Укушенный ядовитой змеей, отделывается, как правило, " +
@@ -312,14 +268,28 @@
                                     "images/hedgehog.jpg" 
                                 ); 
                             }
+                        },
+                        {
+                            "pitch": -24.1, "yaw": -43.0,
+                            "type": "scene",
+                            "sceneId": "scene5",
+                            "cssClass": "nav-arrow arrow-up", 
+                            "createTooltipFunc": function() {}
+                        },
+                        {
+                            "pitch": -25.2, "yaw": 27.8,
+                            "type": "scene",
+                            "sceneId": "scene18",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
                         }
                     ]
                  },
                 "scene5":  { "panorama": "perfect_panorama5.jpg",
                     "hotSpots": [
                         {
-                            "pitch": 6.2, 
-                            "yaw": 114.3, 
+                            "pitch": 3.5, 
+                            "yaw": 118.7, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -337,8 +307,8 @@
                             }
                         }, 
                         {
-                            "pitch": -26.3, 
-                            "yaw": 145.3, 
+                            "pitch": -26.4, 
+                            "yaw": 151.0, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -350,14 +320,14 @@
                                     " зайцами, птицами, насекомыми, падалью, ягодами. Для вывеления потомства роет глубокие норы, " +
                                     " или занимает чужие, например, барсучьи.<br><br>" +
                                     "Лисицы обычно не охотятся рядом со своим логовом, поэтому утки-пеганки иногда благополучно выводят птенцов " +
-                                    "в ответвлениях лисьих нор",
+                                    "в ответвлениях лисьих нор.",
                                     "images/fox.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -10.7, 
-                            "yaw": 168.7, 
+                            "pitch": -14.6, 
+                            "yaw": 170.4, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -375,8 +345,8 @@
                             }
                         },
                         {
-                            "pitch": -27.0, 
-                            "yaw": 173.3, 
+                            "pitch": -30.9, 
+                            "yaw": 176.3, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -384,7 +354,7 @@
                                 showSidePanel(
                                     "Заяц-русак Lepus europaerus", 
                                     "<b>Отряд:</b> Зайцеобразные, сем. Зайцы.<br><br>" +
-                                    "Тяготеет к открытому ландшавту. На лесных территориях чаще встречается по опушкам, " +
+                                    "Тяготеет к открытому ландшафту. На лесных территориях чаще встречается по опушкам, " +
                                     "вырубкам и гарям. Летом питается в основном травянистыми растениями, зимой переходит на веточный корм и " +
                                     "кору деревьев. Активен преимущественно " +
                                     "в темное время суток. В южных частях своего ареала " +
@@ -394,8 +364,8 @@
                             }
                         },
                         {
-                            "pitch": -27.1, 
-                            "yaw": -94.3, 
+                            "pitch": -24.3, 
+                            "yaw": -97.9, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -403,18 +373,18 @@
                                 showSidePanel(
                                     "Барсук Males males", 
                                     "<b>Отряд:</b> Хищные, сем. Куньи.<br><br>" +
-                                    "Предпочитает смешанные леса по холмам, с большим количеством оврагов и долинами" +
-                                    "небольших ручьев, где роет сложные разветленные системы нор. Ведет ночной образ жизни." +
+                                    "Предпочитает смешанные леса по холмам, с большим количеством оврагов и долинами " +
+                                    "небольших ручьев, где роет сложные разветленные системы нор. Ведет ночной образ жизни. " +
                                     "Всеяден: поедает насекомых, слизней, лягушек, мышевидных грызунов; использует и растительную пищу. К концу лета, осени, " +
-                                    "когда созревают плоды и ягоды также включает их в свой рацион. К осени" +
+                                    "когда созревают плоды и ягоды также включает их в свой рацион. К осени " +
                                     "накапливает много жира и впадает в спячку.",
                                     "images/badger.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -3.1, 
-                            "yaw": -160.4, 
+                            "pitch": -7.0, 
+                            "yaw": -160.2, 
                             "type": "info", 
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -441,20 +411,20 @@
                                 showSidePanel(
                                     "Крот обыкновенный, или европейский Talpa europaea", 
                                     "<b>Отряд:</b> Насекомоядные, сем. Кротовые.<br><br>" +
-                                    "Обитает по всей Европе, в средней полосе России, на юге и в Сибири - ареал доходит до реки Лена." +
+                                    "Обитает по всей Европе, в средней полосе России, на юге и в Сибири - ареал доходит до реки Лена. " +
                                     "Предпочитает лиственные и смешанные леса с рыхлой почвой, охотно держится на полянах, опушками, лугах, заходит на огороды и в парки, " +
                                     "при необходимости хорошо плавает. Большую часть жизни обыкновенный крот проводит под землей, прокладывая сложную систему ходов.<br><br>" +
                                     "Многие черты строения крота - результат приспособления к рытью почвы. Его шерстка густая и короткая, а волоски растут вверх, что позволяет ему продвигаться в норках в любом направлении. Шея " +
                                     "сильно укорочена, морда приплюснута, оканчивается хоботком. Зрение развито слабо. Конечности короткие, приспособлены к рытью земли, передние развиты больше задних. Рацион кротов состоит " +
                                     "из беспозвоночных животных, которые встречаются в земле либо на поверхности. Основной корм - дождевые черви.<br><br>" +
-                                    "Кроты приносят пользу сельскому и лесному хозяйству, уничтожая личиной жуков-вредителей и разрыхляя почву.", 
+                                    "Кроты приносят пользу сельскому и лесному хозяйству, уничтожая личинок жуков-вредителей и разрыхляя почву.", 
                                     "images/mole.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 1.8,    
-                            "yaw": -74.1,      
+                            "pitch": -0.6,    
+                            "yaw": -74.4,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -463,16 +433,16 @@
                                     "Бражник мертвая голова Acherontia atropos", 
                                     "Самый крупный бражник, изредка залетающий в Среднюю полосу, вплоть до Карелиии. " +
                                     "В основном распространен в более южных районах (юг Европейской части, Африка, Малая Азия). На спине " +
-                                    "бабочки характерный рисунок, напоминающий череп, откуда и откуда и пошло ее название. Лет в " +
+                                    "бабочки характерный рисунок, напоминающий череп, откуда и пошло ее название. Лет в " +
                                     "июне-июле и сентябре-октябре, активна ночью. Интересна тем, что при сильном возбуждении, способна издавать звуки. " +
-                                    "Гусеницы очень крупные (до 15 см.) с хвостовым рогом, развиваются на пасленовых (в т.ч. картофеле), также на малине, береслете.",
+                                    "Гусеницы очень крупные (до 15 см.) с хвостовым рогом, развиваются на пасленовых (в т.ч. картофеле), также на малине, бересклете.",
                                     "images/Acherontia_atropos.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 14.6,    
-                            "yaw": -76.2,      
+                            "pitch": 12.0,    
+                            "yaw": -73.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -490,8 +460,8 @@
                             }
                         },
                         {
-                            "pitch": 7.2,    
-                            "yaw": -66.5,      
+                            "pitch": 4.8,    
+                            "yaw": -67.5,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -499,7 +469,7 @@
                                 showSidePanel(
                                     "Вяхирь Columba polumbus", 
                                     "<b>Отряд:</b> Голубинообразные, сем. Голубиные.<br><br>" +
-                                    "Крупный лесной голубь. Гнездится на деревьях, гнездо - рыхлая постройка из тонких веток." +
+                                    "Крупный лесной голубь. Гнездится на деревьях, гнездо - рыхлая постройка из тонких веток. " +
                                     "Кладка почти всегда состоит из двух яиц. " +
                                     "Голос - громкое характерное гудение.<br><br>" +
                                     "Птенцов вяхирь выкармливает «голубиным молочком», " +
@@ -509,8 +479,8 @@
                             }
                         },
                         {
-                            "pitch": 18.0,    
-                            "yaw": 142.4,      
+                            "pitch": 13.7,    
+                            "yaw": 140.7,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -521,14 +491,14 @@
                                     "Обитает в елово-лиственничной и кедрово-лиственной тайге.. Зимой совершает небольшие кочевки в " +
                                     "поисках пищи. Питается как животной, так и растительной пищей. " +
                                     "Разносит семена лесных растений, особенно кедра.<br><br>" +
-                                    "Кукши иногда начинают насиживание при температуре минус 30 градусов." +
+                                    "Кукши иногда начинают насиживание при температуре минус 30 градусов. " +
                                     "В это время птица так плотно сидит на гнезде, что ее можно трогать руками.",
                                     "images/kuksha.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -8.8,    
+                            "pitch": -11.2,    
                             "yaw": 150.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
@@ -537,8 +507,8 @@
                                 showSidePanel(
                                     "Серая куропатка Perdix perdix", 
                                     "<b>Отряд:</b> Курообразные, сем. Фазановые.<br><br>" +
-                                    "Встречается в лечах разных типов, перемежающихся с полянами, вырубками, " +
-                                    "болотцами, а также в безлесых пространствах. Питается семенами и побегами ррастений, " +
+                                    "Встречается в лесах разных типов, перемежающихся с полянами, вырубками, " +
+                                    "болотцами, а также в безлесых пространствах. Питается семенами и побегами растений, " +
                                     "ягодами, насекомыми. Оседла, и лишь в суровые зимы откочевывает несколько к югу.<br><br>" +
                                     "Зимой на ночевке птицы располагаются так, " +
                                     "что образуют тесный круг головами наружу.",
@@ -547,8 +517,8 @@
                             }
                         },
                         {
-                            "pitch": 9.2,    
-                            "yaw": -170.0,      
+                            "pitch": 6.8,    
+                            "yaw": -170.1,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -560,18 +530,32 @@
                                     "обширным буреломам, иногда у воды. Насекомоядная перелетная птица. Самец весной " +
                                     " начинает строить сразу несколько гнезд, самка появляется позже, выбирает одно из гнезд, " +
                                     "которое достраивается в нем и происходит выведение потомства. Другие гнезда " +
-                                    "самец использует для отдыха (спальные гнезда)",
+                                    "самец использует для отдыха (спальные гнезда).",
                                     "images/wren.jpg" 
                                 ); 
                             }
+                        },
+                        {
+                            "pitch": -12.4, "yaw": -37.9,
+                            "type": "scene",
+                            "sceneId": "scene7",
+                            "cssClass": "nav-arrow arrow-up", 
+                            "createTooltipFunc": function() {}
+                        },
+                        {
+                            "pitch": -23.5, "yaw": 50.0,
+                            "type": "scene",
+                            "sceneId": "scene4",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
                         }
                     ]
                  },
-                "scene7":  { "panorama": "perfect_panorama7.jpg",
+                "scene7":  { "panorama": "perfect_panorama7.jpg",  
                     "hotSpots": [
                         {
-                            "pitch": 10.2,    
-                            "yaw": -155.6,      
+                            "pitch": 14.5,    
+                            "yaw": -153.6,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -579,24 +563,25 @@
                                 showSidePanel(
                                     "Ремез Remiz pendulinus (гнездо)", 
                                     "<b>Отряд:</b> Воробьинообразные, сем. Ремезовые.<br><br>" +
-                                    "Ремез обычно гнездится по берегам водоемов в прибрежных зарослях деревьев, кустарников и тростника." +
-                                    "Чаще всего гнездо-рукавичка располагается на концах поникших над водой ветвей деревьев и кустарников на высоте 3-5 м." +
-                                    "На сооружение сложного гнезда пара затрачивает не менее двух недель." +
+                                    "Ремез обычно гнездится по берегам водоемов в прибрежных зарослях деревьев, кустарников и тростника. " +
+                                    "Чаще всего гнездо-рукавичка располагается на концах поникших над водой ветвей деревьев и кустарников на высоте 3-5 м. " +
+                                    "На сооружение сложного гнезда пара затрачивает не менее двух недель. " +
                                     "Строительным материалом служат в основном растительные волокна и растительный " +
-                                    "пух, реже исользуется шерсть и пух птиц.",
-                                    "images/remez_nest.jpg" //questionnnnn
+                                    "пух, реже используется шерсть и пух птиц.<br><br>" +
+                                    "Фото: Serg18041944 / Wikimedia Commons / CC BY 4.0",
+                                    "images/remez_nest.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 17.2,    
-                            "yaw": -134.5,      
+                            "pitch": 14.6,    
+                            "yaw": -133.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
-                                    "Вальшнеп Scopolax rusticola", 
+                                    "Вальдшнеп Scopolax rusticola", 
                                     "<b>Отряд:</b> Ржанкообразные, сем. Бекасовые.<br><br>" +
                                     "Населяет сырые, чаще лиственные и смешанные леса с зарастающими " +
                                     "вырубками, болотцами, мелкими ручьями. Питается " +
@@ -608,8 +593,8 @@
                             }
                         },
                         {
-                            "pitch": 6.3,    
-                            "yaw": -124.6,      
+                            "pitch": 4.2,    
+                            "yaw": -124.4,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -620,14 +605,14 @@
                                     "Обитает в лесах всех типов. Питается преимущественно растительной " +
                                     "пищей - семенами и плодами растений. Свое аккуратное гнездо, замаскированное " +
                                     "кусочками лишайников и бересты, выстланное конским " +
-                                    "волосом, перьяи и шерстью, располагает невысоко на деревьях.",
+                                    "волосом, перьями и шерстью, располагает невысоко на деревьях.",
                                     "images/zyablik.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 25.0,    
-                            "yaw": -114.2,      
+                            "pitch": 22.9,    
+                            "yaw": -114.0,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -636,7 +621,7 @@
                                     "Малый пестрый дятел Dendrocopos minor", 
                                     "<b>Отряд:</b> Дятлообразные, сем. Дятловые.<br><br>" +
                                     "Гнездится в лесах и парках по всей лесной зоне, " +
-                                    "выдалбливая дупла в тонких гнилых стволах." +
+                                    "выдалбливая дупла в тонких гнилых стволах. " +
                                     "Питается в основном древесными насекомыми.<br><br>" +
                                     "Зимой малого пестрого дятла можно увидеть в стайках синиц, которые следуют за ним, собирая насекомых в кусочках " +
                                     "коры, осыпающейся, когда дятел долбит деревья.",
@@ -645,8 +630,8 @@
                             }
                         },
                         {
-                            "pitch": -19.5,    
-                            "yaw": -125.9,      
+                            "pitch": -22.8,    
+                            "yaw": -126.1,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -657,15 +642,16 @@
                                     "Обитает в заросших пойменных озерах и речных заводях с пространствами открытой воды. " +
                                     "Питается моллюсками, водными насекомыми, пиявками и лягушками, реже корневищами растений. " +
                                     "Строит в берегах длинные норы с подводным входом.<br><br>" +
-                                    "Выхухоль вплоне мирно уживается с бобрами и даже живет иногда в бобровых " +
-                                    "хатках, строя для себя отдельную «комнаты»",
-                                    "images/kanuk.jpg" //замена 
+                                    "Выхухоль вполне мирно уживается с бобрами и даже живет иногда в бобровых " +
+                                    "хатках, строя для себя отдельную «комнату»<br><br>" + 
+                                    "Источник изображения: Фото Rémih распространяется на условиях лицензии CC BY-SA 4.0»", //сделать шрифт меньше + вставить ссылки на лицензию 
+                                    "images/desman.jpg",
                                 ); 
                             }
                         },
                         {
-                            "pitch": -41.4,    
-                            "yaw": -100.7,      
+                            "pitch": -36.1,    
+                            "yaw": -102.0,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -680,13 +666,13 @@
                                     "В выборе жилья неприхотлива. Плодовита. Всеядна.<br><br>" +
                                     "В случае опасности предпочитает притворяться мертвой. Единственный " +
                                     "представитель семейства псовых, залегающий на зиму в спячку.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/racoondog.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -4.1,    
-                            "yaw": -69.7,      
+                            "pitch": -11.7,    
+                            "yaw": -70.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -699,13 +685,13 @@
                                     "«Бобровые ландшафты» отличаются высоким разнообразием животных и растений.<br><br>" +
                                     "Осину диаметром 10-12 см бобр валит и разделывает за одну ночь, так что к " +
                                     "утру на месте работы зверька остается лишь пенек и кучка стружек.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/bober.jpg"
                                 ); 
                             }
                         },
                         {
-                            "pitch": 11.2,    
-                            "yaw": -73.8,      
+                            "pitch": 9.4,    
+                            "yaw": -73.9,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -715,16 +701,16 @@
                                     "<b>Отряд:</b> Воробьинообразные, сем. Вьюрковые.<br><br>" +
                                     "Гнездится в лесах (преимущественно в смешанных и лиственных) в " +
                                     "Европейской части России и на Кавказе. Питается " +
-                                    "растительной пищей, семенами и плодами растений." +
+                                    "растительной пищей, семенами и плодами растений. " +
                                     "Гнездо строит на дереве или кусте. Осенью и зимой встречается стайками, " +
                                     "часто вместе с другими вьюрковыми и воробьями.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/greenbird.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -22.4,    
-                            "yaw": -50.6,      
+                            "pitch": -26.0,    
+                            "yaw": -50.7,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -737,13 +723,13 @@
                                     "В отличие от русака, беляк меняет цвет меха " +
                                     "по сезонам. Снежно-белый он только зимой, " +
                                     "летом же он становится серого цвета.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/brown_hare.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 7.1,    
-                            "yaw": -44.7,      
+                            "pitch": 4.8,    
+                            "yaw": -44.5,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -752,17 +738,17 @@
                                     "Свиристель обыкновенный Bombicilla garrulus", 
                                     "<b>Отряд:</b> Воробьинообразные, сем. Свиристелевые.<br><br>" +
                                     "Гнездится в разреженных хвойных и смешанных лесах, на зарастающих гарях и " +
-                                    "вырубках, небольшими колониями. Питается ягодами. плодами, птенцов выкармливает " +
-                                    "насекомыми, личинками, ягодами и молодыми побегами." +
+                                    "вырубках, небольшими колониями. Питается ягодами и плодами, птенцов выкармливает " +
+                                    "насекомыми, личинками, ягодами и молодыми побегами. " +
                                     "Зимой широко кочуют, появляясь большими стаями в городах, " +
                                     "особенно в годы урожая рябины.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/bombicilla_garrulus.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 11.4,    
-                            "yaw": -41.6,      
+                            "pitch": 9.4,    
+                            "yaw": -41.5,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -775,7 +761,7 @@
                                     "поедает также ягоды и семена.<br><br>" +
                                     "Гнездо рябинника легко отличить от гнезд других дроздов по большому количеству " +
                                     "глиняной обмазки, придающей конструкции дополнительную прочность.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/turdus_pilaris.jpg" 
                                 ); 
                             }
                         },
@@ -789,18 +775,18 @@
                                 showSidePanel(
                                     "Осиное гнездо", 
                                     "Процесс создания гнезда очень интересен. Осы начинают строить гнездо после зимней спячки. Они жвалами соскребают волокна мертвой древесины " +
-                                    "с ветки и смешивают их со своей слюной, получая ассу наподобие папье-маше. Затем они делают тонкие, как папиросная бумага, полоски, по одной порции " +
+                                    "с ветки и смешивают их со своей слюной, получая массу наподобие папье-маше. Затем они делают тонкие, как папиросная бумага, полоски, по одной порции " +
                                     "добавляя массу по нижнему краю медленно растущего шара. Цвет бумаги может быть " +
                                     "белым, коричневым или серым - в зависимости от вида древесины.<br><br>" +
                                     "Бумажное гнездо очень тонкое, но оно не растворяется дождем. Температура " +
                                     "внутри гнезда круглый год держится на уровне 30°C.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/beenest.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 5.6,    
-                            "yaw": -13.6,      
+                            "pitch": 7.9,    
+                            "yaw": -9.7,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -813,36 +799,50 @@
                                     "зайцы-беляки, питается также другими другими животными от полевок и птиц до молодых лосей.<br><br>" +
                                     "В среднем рыси удается поймать одного зайца в четыре дня, " +
                                     "причем девять попыток из десяти оказываются неудачными.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/felis_lynx.jpg" 
                                 ); 
                             }
+                        },
+                        {
+                            "pitch": -21.2, "yaw": 44.4,
+                            "type": "scene",
+                            "sceneId": "scene6",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
+                        },
+                        {
+                            "pitch": -14.0, "yaw": 139.7,
+                            "type": "scene",
+                            "sceneId": "scene5",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
                         }
                     ]
                  },
                 "scene6":  { "panorama": "perfect_panorama6.jpg",
                     "hotSpots": [
                         {
-                            "pitch": -8.6,    
-                            "yaw": -142.9,      
+                            "pitch": -12.4,    
+                            "yaw": -142.3,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
-                                    "Рябчик Bonasa bonaisa", 
+                                    "Рябчик Bonasa bonasia", 
                                     "<b>Отряд:</b> Курообразные, сем. Тетеревиные.<br><br>" +
                                     "Гнездится по долинам лесных речек и ручьев, предпочитает леса с густым подлеском. " +
                                     "Питается растительной пищей, летом травянистыми растениями, семенами и ягодами, " +
-                                    "зимой - почкам, сережками и побегами деревьев.<br><br>" +
+                                    "зимой - почками, сережками и побегами деревьев.<br><br>" +
                                     "В зимнее время птицы много времени проводят, зарывшись в снег и " +
                                     "выходя наружу только для кормежки.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/grouse.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 18.6,    
-                            "yaw": -131.2,      
+                            "pitch": 15.0,    
+                            "yaw": -129.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -855,13 +855,13 @@
                                     "пища семена, ели, сосны, насекомые.<br><br>" +
                                     "Кедровка птица любопытная и, наверное, поэтому любит сидеть " +
                                     "на вершинах деревьев, откуда открывается хороший обзор.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/kedrovka.jpg"
                                 ); 
                             }
                         },
                         {
-                            "pitch": 23.1,    
-                            "yaw": -104.0,      
+                            "pitch": 22.0,    
+                            "yaw": -107.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -869,18 +869,19 @@
                                 showSidePanel(
                                     "Летяга (Pteromys volans)", 
                                     "<b>Отряд:</b> Грызуны, сем. Беличьи.<br><br>" +
-                                    "Этот небольшой зверек имеет мягкий шелковистяй мех, очень крупные глаза и кожистую перепонку вдоль тела. " +
+                                    "Этот небольшой зверек имеет мягкий шелковистый мех, очень крупные глаза и кожистую перепонку вдоль тела. " +
                                     "Характерная особенность - способность к пассивному полету. Предпочитает слабонарушенные леса, с большим количеством " +
                                     "дуплистых деревьев. Питается преимущественно почками деревьев, молодой листвой, хвоей, молодыми побегами и соцветиями.<br><br>" +
                                     "Летяга может планировать на расстояние до 50 метров. Обычно летяга прыгает с высоты " +
-                                    "20-30 метров и планирует к следующему дереву.",
-                                    "images/kanuk.jpg" //замена
+                                    "20-30 метров и планирует к следующему дереву.<br><br>" + 
+                                    "Источник изображения: Фото Tokumi / Свободное использование",
+                                    "images/flying_squirrel.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -14.0,    
-                            "yaw": -91.0,      
+                            "pitch": -18.8,    
+                            "yaw": -90.3,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -893,13 +894,13 @@
                                     "зимой - преимущественно хвоей.<br><br>" +
                                     "Зайцы оказывают влияние на рост, развитие и расселение лесных растений, а сами " +
                                     "являются важным кормом для хищников - рысей, лисиц, беркутов и филинов.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/white_hare.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": -13.0,    
-                            "yaw": -80.9,      
+                            "pitch": -15.5,    
+                            "yaw": -81.5,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -910,10 +911,10 @@
                                     "Населяет северные тундры, проникая с севера в лесную зону и лесостепь. Обитатель " +
                                     "кустарниковых и моховых болот. Питается растительной пищей: почками, побегами, сережками. " +
                                     "Служит основной пищей кречета, белой совы и других хищников.<br><br>" +
-                                    "Для того вида характерен сезонных диморфизм. Летом птица имеет пеструю окраску, а зимой она снежно-белая. " +
+                                    "Для этого вида характерен сезонных диморфизм. Летом птица имеет пеструю окраску, а зимой она снежно-белая. " +
                                     "Лапы белой куропатки широкие и густо оперены вплоть до пальцев, " +
-                                    "в результате чего птица не провалится в снег.", 
-                                    "images/kanuk.jpg" //замена
+                                    "в результате чего птица не проваливается в снег.", 
+                                    "images/white_bird.jpg" 
                                 ); 
                             }
                         },
@@ -925,21 +926,20 @@
                             "createTooltipFunc": hideDefaultTooltip,
                             "clickHandlerFunc": function() { 
                                 showSidePanel(
-                                    "Кузница дятла (большой пестрый дятел)<br><br>" +
-                                    "Dendrocopos major",
+                                    "Кузница дятла (большой пестрый дятел). Dendrocopos major",
                                     "<b>Отряд:</b> Дятлообразные, сем. Дятловые.<br><br>" +
                                     "«Кузница» дятла - следы жизнедеятельности (место зимней кормежки) большого пестрого дятла. " +
                                     "Дятел облюбовывает какое-либо (часто сухое) дерево и выдалбливает в нем отверстия " +
                                     "для фиксации шишек и извлечения из них семян.<br><br>" +
                                     "Как правило, дятел пользуется такой «кузницей» в течение " +
                                     "всего зимнего периода.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/woodpecker_forge.jpg" 
                                 ); 
                             } 
                         },
                         {
-                            "pitch": 21.8,    
-                            "yaw": -82.2,      
+                            "pitch": 19.6,    
+                            "yaw": -81.9,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -952,13 +952,13 @@
                                     "дуплах, которые выдалбливает сам в рухлявых деревьях.<br><br>" +
                                     "Весной дятел часто пьет березовый сок, оставляя на стволах " +
                                     "аккуратные ряды маленьких отверстий в бересте.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/bright_woodpecker.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 30.5,    
-                            "yaw": -82.1,      
+                            "pitch": 28.8,    
+                            "yaw": -82.2,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -970,13 +970,13 @@
                                     "Чаще других синиц поселяется рядом с человеком в поселках и городских парках. " +
                                     "Питается в основном насекомыми и семенами растений. В зимнее время кочует " +
                                     "небольшими стайками вместе с другими синицами.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/parus_major.jpg" 
                                 ); 
                             }
                         },
                         {
                             "pitch": 1.0,    
-                            "yaw": -69.5,      
+                            "yaw": -67.1,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -989,13 +989,13 @@
                                     "Осенью запасает шишки, грибы и орехи, чтобы пользоваться ими зимой.<br><br>" +
                                     "Часть семян из беличьих запасов может прорасти. Тем самым белки " +
                                     "способствуют разрастанию леса.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/squirrel.jpg" 
                                 ); 
                             }
                         }, 
                         {
-                            "pitch": 5.6,    
-                            "yaw": -71.8,      
+                            "pitch": 6.0,    
+                            "yaw": -69.3,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1003,18 +1003,19 @@
                                 showSidePanel(
                                     "Обыкновеная белка Sciurus vulgaris (гайно)", 
                                     "<b>Отряд:</b> Грызуны, сем. Белки.<br><br>" +
-                                    "Встречаются ьелки в высокоствольных лесах всех типов, ведут древесный образ жизни. " +
+                                    "Встречаются белки в высокоствольных лесах всех типов, ведут древесный образ жизни. " +
                                     "Питаются растительными кормами (семенами, ягодами, грибами) с добавлением животных (насекомые, яйца птиц)." +
                                     "Осенью запасают шишки, грибы и орехи. Белки могут жить и выводить свое потомство " +
                                     "в дуплах деревьев или строить для этого специальные гнезда. " +
-                                    "Гнездо белки называется гайно.",
-                                    "images/kanuk.jpg" //замена 
+                                    "Гнездо белки называется гайно.<br><br>" +
+                                    "Источник изображения: Общественное достояние / Wikimedia Commons",
+                                    "images/squirrel_nest.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 23.3,    
-                            "yaw": -35.3,      
+                            "pitch": 24.0,    
+                            "yaw": -34.0,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1027,13 +1028,13 @@
                                     "Охотится, делая стремительный бросок из засады.<br><br>" +
                                     "Самки хищных птиц обычно крупнее самцов. " +
                                     "У ястребов эта разница достигает полутора раз.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/accipiter_nisus.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 16.0,    
-                            "yaw": -34.5,      
+                            "pitch": 14.5,    
+                            "yaw": -31.9,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1046,9 +1047,42 @@
                                     "Питается растительной пищей.<br><br>" +
                                     "Найдя березу с большим количеством сережек, чечетки облепляют ее и " +
                                     "кормятся иногда по два-три дня на одном дереве.",
-                                    "images/kanuk.jpg" //замена
+                                    "images/acanthis_flammea.jpg" 
                                 ); 
                             }
+                        },
+                        {
+                            "pitch": -29.6,    
+                            "yaw": -75.8,      
+                            "type": "info",
+                            "cssClass": "custom-museum-hotspot",
+                            "createTooltipFunc": hideDefaultTooltip,
+                            "clickHandlerFunc": function() { 
+                                showSidePanel(
+                                    "Рысь Felis lynx", 
+                                    "<b>Отряд:</b> Хищные, сем. Кошки.<br><br>" +
+                                    "Отдает предпочтение глухим, сильно захламленным темнохвойным лесам. " +
+                                    "Отлично лазает по скалам и деревьям и прекрасно плавает. Основа питания " +
+                                    "зайцы-беляки, питается также другими другими животными от полевок и птиц до молодых лосей.<br><br>" +
+                                    "В среднем рыси удается поймать одного зайца в четыре дня, " +
+                                    "причем девять попыток из десяти оказываются неудачными.",
+                                    "images/felis_lynx6.jpg" 
+                                ); 
+                            }
+                        },
+                        {
+                            "pitch": -22.3, "yaw": 46.7,
+                            "type": "scene",
+                            "sceneId": "scene18",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
+                        },
+                        {
+                            "pitch": -22.5, "yaw": 135.7,
+                            "type": "scene",
+                            "sceneId": "scene7",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
                         }
                     ]
                  },
@@ -1056,8 +1090,8 @@
                     "panorama": "perfect_panorama18.jpg",
                     "hotSpots": [
                         {
-                            "pitch": -9.2,     
-                            "yaw": 87.2,      
+                            "pitch": -12.1,     
+                            "yaw": 87.5,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1075,8 +1109,8 @@
                             }
                         },
                         {
-                            "pitch": 16.0,    
-                            "yaw": 78.8,      
+                            "pitch": 15.7,    
+                            "yaw": 81.4,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1085,7 +1119,7 @@
                                     "Ушастая сова Asio otus", 
                                     "<b>Отряд:</b> Совообразные, сем. Совиные.<br><br>" +
                                     "Гнездится на деревьях (в старых гнездах сорок, ворон и др.). Слошных " +
-                                    "лесных массивов избегает. Активна преимущественно ночью. Чередует поисковый полет с подкарауливанием." +
+                                    "лесных массивов избегает. Активна преимущественно ночью. Чередует поисковый полет с подкарауливанием. " +
                                     "Пища - в основном мышевидные грызуны.<br><br>" +
                                     "В осеннее время, на пролете и зимовках часто держится " +
                                     "стайками в 5-10 и даже 50 особей.",
@@ -1094,8 +1128,8 @@
                             }
                         },
                         {
-                            "pitch": 22.7,    
-                            "yaw": 10.7,      
+                            "pitch": 19.3,    
+                            "yaw": 11.8,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1108,13 +1142,13 @@
                                     "которую может найти.<br><br>" +
                                     "Сороку очень привлекают блестящие на солнце предметы. В ее гнездах не раз находили украшения, " +
                                     "ложки, даже золотые монеты и очки!",
-                                    "images/kanuk.jpg" //замена
+                                    "images/pica_pica.jpg" 
                                 ); 
                             }
                         },
                         {
-                            "pitch": 23.7,    
-                            "yaw": 3.5,      
+                            "pitch": 27.3,    
+                            "yaw": 2.1,      
                             "type": "info",
                             "cssClass": "custom-museum-hotspot",
                             "createTooltipFunc": hideDefaultTooltip,
@@ -1127,9 +1161,23 @@
                                     "зарослях кустарников, часто по берегам водоемов, в прибрежных ивняках. " +
                                     "Крыша, вероятно, служит для маскировки яркой черно-белой птицы " +
                                     "во время насиживания.",
-                                    "images/kanuk.jpg" //замена 
+                                    "images/pica_pica_nest.jpg" 
                                 ); 
                             }
+                        },
+                        {
+                            "pitch": -22.3, "yaw": 137.3,
+                            "type": "scene",
+                            "sceneId": "scene4",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
+                        },
+                        {
+                            "pitch": -29.2, "yaw": -43.3,
+                            "type": "scene",
+                            "sceneId": "scene6",
+                            "cssClass": "nav-arrow arrow-up",
+                            "createTooltipFunc": function() {}
                         }
                     ]
                 }
@@ -1142,14 +1190,6 @@
                 showSidePanel(args.title, args.desc, args.img);
             });
         }
-
-        const КАРТА_МУЗЕЯ = {
-            'scene4':  { name: '🏛️ Вы находитесь: Вход в зал',           allowed: ['scene5', 'scene18'] },
-            'scene5':  { name: '🖼️ Вы находитесь: Галерея за левой аркой', allowed: ['scene4', 'scene7'] },
-            'scene7':  { name: '✨ Вы находитесь: Галерея за правой аркой',allowed: ['scene5', 'scene6'] },
-            'scene6':  { name: '🏺 Вы находитесь: Правое крыло зала',      allowed: ['scene7', 'scene18'] },
-            'scene18': { name: '💎 Вы находитесь: Центр зала (Выход)',     allowed: ['scene4', 'scene6'] }
-        };
 
         function showSidePanel(title, description, imageUrl) {
             document.getElementById('panel-caption').innerText = title;
@@ -1169,39 +1209,10 @@
             hotSpotDiv.classList.add('custom-museum-hotspot');
         }
 
-
-        function goTo(sceneId) {
-            viewer.loadScene(sceneId);
-            updatePanel(sceneId);
-            closeSidePanel(); 
-        }
-
-
-        function updatePanel(currentId) {
-            const config = КАРТА_МУЗЕЯ[currentId];
-            document.getElementById('current-scene').innerText = config.name;
-            
-            const buttons = {
-                'scene4': 'btn-4',
-                'scene5': 'btn-5',
-                'scene7': 'btn-7',
-                'scene6': 'btn-6',
-                'scene18': 'btn-18'
-            };
-
-            for (let id in buttons) {
-                let btnElement = document.getElementById(buttons[id]);
-                if (config.allowed.includes(id)) {
-                    btnElement.classList.add('active');
-                } else {
-                    btnElement.classList.remove('active');
-                }
-            }
-        }
-
-        setTimeout(function() { updatePanel('scene4'); }, 500);
     </script>
 </body>
 </html>
 
-//кружочки больше + ярче - модель экрана линукс 
+//добавить рысь (+ другая картинка), точки подвинуть, чтобы не закрывали, стрелки поменять (дизайн) в зеленом кружочке, но указатели в сторону 
+//19 октября 
+//сверка картинок с начальством 
